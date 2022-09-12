@@ -22,16 +22,16 @@ tokenizer = AutoTokenizer.from_pretrained("ramsrigouthamg/t5-large-paraphraser-d
 #t5-large customised code
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print ("device ",device)
+# print ("device ",device)
 model = model.to(device)
 
 
 @st.cache(allow_output_mutation=True)
 def t5_large_paraphraser(data,num_return_sequences):
   outputs = []
-  df = pd.DataFrame(columns=['input','output'])
-  df1 = df.copy()
-  c= 0
+#   df = pd.DataFrame(columns=['input','output'])
+#   df1 = df.copy()
+#   c= 0
   for text in data:
       input = "paraphrase: "+text + " </s>"
       encoding = tokenizer.encode_plus(input,max_length =128, padding=True, return_tensors="pt")
