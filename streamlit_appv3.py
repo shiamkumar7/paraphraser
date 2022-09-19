@@ -43,8 +43,9 @@ def load_model():
 # @st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def t5_large_paraphraser(data,num_return_sequences):
   outputs = []
-  for text in data:
-      input = "paraphrase: "+text + " </s>"
+  my_bar = st.progress(0)
+  for text1 in data:
+      input = "paraphrase: "+text1 + " </s>"
       encoding = tokenizer.encode_plus(input,max_length =128, padding=True, return_tensors="pt")
       input_ids,attention_mask  = encoding["input_ids"].to(device), encoding["attention_mask"].to(device)
 
@@ -60,6 +61,14 @@ def t5_large_paraphraser(data,num_return_sequences):
           sent = tokenizer.decode(beam_output, skip_special_tokens=True,clean_up_tokenization_spaces=True)
           # outputs.append(sent)
           outputs.append(sent.split('paraphrasedoutput: ')[1])
+      print(f'ETA {len(outputs)}/{len(data)} ')
+
+      my_bar.progress(len(outputs)/len(data))
+  # my_bar = st.progress(0)
+  #
+  # for percent_complete in range(100):
+  #     time.sleep(0.1)
+  #     my_bar.progress(percent_complete + 1)
   # return outputs
 
   if choice=='Single text':
