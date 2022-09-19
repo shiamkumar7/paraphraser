@@ -1,8 +1,12 @@
 
 # Loading
 # import numpy as np
-# import pandas as pd
+import pandas as pd
 import torch
+import base64
+import time
+timestr = time.strftime("%Y%m%d-%H%M%S")
+import streamlit.components as stc
 
 
 # import joblib
@@ -58,9 +62,31 @@ def t5_large_paraphraser(data,num_return_sequences):
           outputs.append(sent.split('paraphrasedoutput: ')[1])
   # return outputs
 
-  for op in outputs:
-      st.text(op)
+  if choice=='Single text':
+    for op in outputs:
+        st.text(op)
+    return outputs
+  else:
+    st.text(' Please download the output file below')
+    return outputs
   # st.success(outputs)
+
+
+
+class FileDownloader(object):
+
+    def __init__(self, data, filename='myfile', file_ext='txt'):
+        super(FileDownloader, self).__init__()
+        self.data = data
+        self.filename = filename
+        self.file_ext = file_ext
+
+    def download(self):
+        b64 = base64.b64encode(self.data.encode()).decode()
+        new_filename = "{}_{}_.{}".format(self.filename, timestr, self.file_ext)
+        st.markdown("#### Download File ###")
+        href = f'<a href="data:file/{self.file_ext};base64,{b64}" download="{new_filename}">Click Here!!</a>'
+        st.markdown(href, unsafe_allow_html=True)
 
 #adding new
 menu = ['Upload a txt file','Single text']
@@ -71,6 +97,7 @@ if choice =='Single text':
     text = st.text_input('Enter input text')
     text = [text]
     num_return_seq = st.number_input('Enter number of return sequence to generate',min_value=1, max_value=5, value=3, step=1)
+    st.write('Outputs')
 elif choice == 'Upload a txt file':
     st.subheader('Text File')
     txt_file = st.file_uploader('Upload your text file',type=['txt'])
@@ -84,11 +111,26 @@ elif choice == 'Upload a txt file':
         print(text)
         num_return_seq = 1
 
-st.write('Outputs')
+def output_file_generator(text,outputs):
+    df = pd.DataFrame()
+    if choice=='Upload a txt file':
+        df['input'] = text
+        df['output'] = outputs
+        download = FileDownloader(df.to_csv(index=None),file_ext='csv').download()
+    elif choice=='Single text':
+        df['input'] = text*num_return_seq
+        df['output'] = outputs
+        download = FileDownloader(df.to_csv(index=None), file_ext='csv').download()
 
-if st.button('Submit'):
+
+# st.write('Outputs')
+
+
+if st.button('Submit') and choice in menu:
     model,tokenizer,device = load_model()
-    t5_large_paraphraser(text,num_return_seq)
+    outputs = t5_large_paraphraser(text,num_return_seq)
+    output_file_generator(text,outputs)
+
 
 
 
