@@ -61,9 +61,11 @@ def t5_large_paraphraser(data,num_return_sequences):
           sent = tokenizer.decode(beam_output, skip_special_tokens=True,clean_up_tokenization_spaces=True)
           # outputs.append(sent)
           outputs.append(sent.split('paraphrasedoutput: ')[1])
-      print(f'ETA {len(outputs)}/{len(data)} ')
 
-      my_bar.progress(len(outputs)/len(data))
+
+      if choice=='Upload a csv file':
+        my_bar.progress(len(outputs)/len(data))
+        print(f'ETA {len(outputs)}/{len(data)} ')
   # my_bar = st.progress(0)
   #
   # for percent_complete in range(100):
