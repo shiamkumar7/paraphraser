@@ -124,10 +124,15 @@ def output_file_generator(text,outputs):
         df['input'] = text
         df['output'] = outputs
         download = FileDownloader(df.to_csv(index=None),file_ext='csv').download()
+        filename = "{}_{}_.{}".format('CSVfile', timestr, 'csv')
+        df.to_csv('../Output_files/'+filename,index=None)
     elif choice=='Single text':
         df['input'] = text*num_return_seq
         df['output'] = outputs
         download = FileDownloader(df.to_csv(index=None), file_ext='csv').download()
+        filename = "{}_{}_.{}".format('singletext', timestr, 'csv')
+        df.to_csv('../Output_files/' + filename, index=None)
+
 
 
 # st.write('Outputs')
